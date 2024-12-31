@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import easyocr
-from PIL import Image, ImageEnhance
+from PIL import Image
 import cv2
 import numpy as np
 import os
@@ -11,7 +11,7 @@ app = Flask(__name__)
 reader = easyocr.Reader(['en'])  # Adjust language if needed
 
 # Path to card set symbols
-card_set_folder = "src/set_icons/"  # Path to your set icons folder
+card_set_folder = "C:/Users/Sam/fresh-frontend/src/set_icons/"  # Path to your set icons folder
 
 def load_card_set_icons():
     """Load card set icons into a dictionary."""
@@ -19,8 +19,8 @@ def load_card_set_icons():
     for filename in os.listdir(card_set_folder):
         if filename.endswith(".png") or filename.endswith(".jpg"):
             path = os.path.join(card_set_folder, filename)
-            icon_name = os.path.splitext(filename)[0]  # Use filename (without extension) as the set name
-            card_sets[icon_name] = cv2.imread(path, cv2.IMREAD_GRAYSCALE)  # Load in grayscale
+            icon_name = os.path.splitext(filename)[0]
+            card_sets[icon_name] = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     return card_sets
 
 # Load card set symbols at the start
@@ -31,12 +31,10 @@ def compare_symbols(extracted_symbol, card_sets):
     best_match = None
     best_score = 0
 
-    # Resize extracted symbol to match template sizes
     extracted_symbol_resized = cv2.resize(extracted_symbol, (50, 50))
 
     for name, template in card_sets.items():
         template_resized = cv2.resize(template, (50, 50))
-        # Compare using Template Matching
         score = cv2.matchTemplate(extracted_symbol_resized, template_resized, cv2.TM_CCOEFF_NORMED)
         _, max_val, _, _ = cv2.minMaxLoc(score)
 
@@ -44,12 +42,12 @@ def compare_symbols(extracted_symbol, card_sets):
             best_score = max_val
             best_match = name
 
-    return best_match if best_score > 0.8 else None  # Adjust threshold as needed
+    return best_match if best_score > 0.8 else None
 
 @app.route('/ocr', methods=['POST'])
 def ocr():
     try:
-        print("OCR endpoint hit!")  # Debugging log
+        print("OCR endpoint hit!")
 
         # Check if the request contains a file
         if 'file' not in request.files:
@@ -62,22 +60,22 @@ def ocr():
         if not file.mimetype.startswith('image/'):
             return jsonify({'error': 'Invalid file type'}), 400
 
-        # Read the file content as bytes and load as an image
+        # Read the file content as bytes
         file_bytes = file.read()
-        img = Image.open(io.BytesIO(file_bytes))
-        img = img.convert('RGB')  # Ensure it's in RGB format for cropping
+        np_image = np.frombuffer(file_bytes, np.uint8)
+        image = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
 
-        # Crop the region for the set symbol (adjust coordinates based on card layout)
-        width, height = img.size
-        symbol_region = img.crop((width * 0.85, height * 0.85, width, height))  # Adjust as needed
-        symbol_np = np.array(symbol_region)
-        symbol_gray = cv2.cvtColor(symbol_np, cv2.COLOR_RGB2GRAY)
+        # Crop the region for the set symbol
+        height, width, _ = image.shape
+        symbol_region = image[int(height * 0.85):height, int(width * 0.85):width]  # Adjust as needed
+        symbol_gray = cv2.cvtColor(symbol_region, cv2.COLOR_BGR2GRAY)
 
         # Compare the extracted symbol with known card set icons
         matched_set = compare_symbols(symbol_gray, card_sets)
 
-        # Process results for name (optional)
-        results = reader.readtext(io.BytesIO(file_bytes))
+        # Perform OCR
+        results = reader.readtext(image)
+
         name = None
         for item in results:
             cleaned_text = item[1].strip()
