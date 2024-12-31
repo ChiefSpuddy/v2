@@ -1,89 +1,88 @@
-import React, { useState, useRef } from 'react';
-import Webcam from 'react-webcam';
-import { extractTextFromImage } from './utils/ocrUtils';
-import './CardScanner.css';
+import React, { useState } from 'react';
 
-function CardScanner() {
-  const [image, setImage] = useState(null);
-  const [extractedText, setExtractedText] = useState('');
-  const [ocrLoading, setOcrLoading] = useState(false);
-  const [showWebcam, setShowWebcam] = useState(false);
-  const webcamRef = useRef(null);
+const CardScanner = () => {
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [ocrResults, setOcrResults] = useState([]);
+    const [ebayResults, setEbayResults] = useState([]);
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setImage(imageUrl);
-      setOcrLoading(true);
+    // Handle file input
+    const handleFileChange = (event) => {
+        setSelectedFile(event.target.files[0]);
+    };
 
-      const fullText = await extractTextFromImage(imageUrl);
-      setExtractedText(fullText);
+    // Function to call OCR backend
+    const handleScan = async () => {
+        if (!selectedFile) {
+            alert('Please select a file');
+            return;
+        }
 
-      setOcrLoading(false);
-    }
-  };
+        const formData = new FormData();
+        formData.append('file', selectedFile);
 
-  const captureImage = async () => {
-    if (webcamRef.current) {
-      const capturedImage = webcamRef.current.getScreenshot();
-      setImage(capturedImage);
-      setOcrLoading(true);
+        try {
+            const ocrResponse = await fetch('http://127.0.0.1:5000/ocr', {
+                method: 'POST',
+                body: formData,
+            });
+            const ocrData = await ocrResponse.json();
+            setOcrResults(ocrData.text);
 
-      const fullText = await extractTextFromImage(capturedImage);
-      setExtractedText(fullText);
+            if (ocrData.text.length) {
+                // Automatically trigger eBay search using the detected text
+                handleSearch(ocrData.text.join(' '));
+            }
+        } catch (error) {
+            console.error('Error during OCR scan:', error);
+        }
+    };
 
-      setOcrLoading(false);
-    }
-  };
+    // Function to call eBay search backend
+    const handleSearch = async (query) => {
+        try {
+            const searchResponse = await fetch('http://127.0.0.1:5000/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query }),
+            });
+            const searchData = await searchResponse.json();
+            setEbayResults(searchData.items || []);
+        } catch (error) {
+            console.error('Error during eBay search:', error);
+        }
+    };
 
-  const toggleWebcam = () => {
-    setShowWebcam((prev) => !prev);
-  };
-
-  return (
-    <div className="card-scanner">
-      <h2>Card Scanner</h2>
-      <p className="instructions">
-        Upload or scan a card to extract all visible text.
-      </p>
-
-      <div className="file-input-wrapper">
-        <button>Select File</button>
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
-      </div>
-
-      <div>
-        <button onClick={toggleWebcam}>{showWebcam ? 'Close Webcam' : 'Use Webcam'}</button>
-      </div>
-
-      {showWebcam && (
-        <div className="webcam-section">
-          <Webcam
-            ref={webcamRef}
-            audio={false}
-            screenshotFormat="image/jpeg"
-            style={{ width: '100%', height: 'auto' }}
-          />
-          <button onClick={captureImage}>Capture</button>
+    return (
+        <div>
+            <h1>Card Scanner</h1>
+            <div>
+                <input type="file" onChange={handleFileChange} />
+                <button onClick={handleScan}>Scan Card</button>
+            </div>
+            <div>
+                <h2>OCR Results:</h2>
+                <ul>
+                    {ocrResults.map((text, index) => (
+                        <li key={index}>{text}</li>
+                    ))}
+                </ul>
+            </div>
+            <div>
+                <h2>eBay Search Results:</h2>
+                <ul>
+                    {ebayResults.map((item, index) => (
+                        <li key={index}>
+                            <a href={item.itemWebUrl} target="_blank" rel="noopener noreferrer">
+                                {item.title} - {item.price.value} {item.price.currency}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
-      )}
-
-      {ocrLoading && <p>Processing image, please wait...</p>}
-
-      {image && (
-        <div className="preview-section">
-          <h3>Preview</h3>
-          <img src={image} alt="Uploaded or Captured Card" />
-        </div>
-      )}
-
-      <div className="text-output">
-        <h3>Extracted Text</h3>
-        {extractedText ? <pre>{extractedText}</pre> : <p>No text extracted yet.</p>}
-      </div>
-    </div>
-  );
-}
+    );
+};
 
 export default CardScanner;
