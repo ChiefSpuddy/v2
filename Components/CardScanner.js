@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import Webcam from 'react-webcam';
-import { preprocessImage, extractCardDetails } from '../utils/ocrUtils';
+import { preprocessImage, extractCardDetails } from './utils/ocrUtils';
 import './CardScanner.css';
 
 function CardScanner() {
