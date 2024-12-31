@@ -41,6 +41,14 @@ function CardScanner() {
   return (
     <div className="card-scanner">
       <h2>Card Scanner</h2>
+      <p className="instructions">
+        Use the card scanner to upload an image or scan your Pokémon cards. Choose one of the options below:
+      </p>
+      <ul className="instructions-list">
+        <li>Select a file from your computer to upload.</li>
+        <li>Open the webcam to scan the card directly.</li>
+        <li>Preview the uploaded or scanned card below.</li>
+      </ul>
 
       {/* File Upload */}
       <div className="file-input-wrapper">
@@ -56,7 +64,7 @@ function CardScanner() {
       </div>
 
       {showWebcam && (
-        <div>
+        <div className="webcam-section">
           {/* Camera Selector */}
           <select onChange={(e) => setDeviceId(e.target.value)} value={deviceId}>
             {devices.map((device, index) => (
@@ -85,7 +93,7 @@ function CardScanner() {
 
       {/* Display Image */}
       {image && (
-        <div>
+        <div className="preview-section">
           <h3>Preview</h3>
           <img
             src={image}

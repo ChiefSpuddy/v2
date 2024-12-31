@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Import Link for navigation
 import './NotFound.css';
-import NotFoundImage from './assets/pikachu-baloon.gif'; // Adjusted path
+import NotFoundImage from './assets/jiggly-cry.gif'; // Adjusted path
 
 const NotFound = () => {
   return (
