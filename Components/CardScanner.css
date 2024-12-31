@@ -1,88 +1,119 @@
 .card-scanner {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
+  padding: 20px;
+  min-height: 100vh; /* Ensure the container takes at least the full height of the viewport */
+  box-sizing: border-box;
+  overflow-y: auto; /* Enable scrolling if content exceeds viewport height */
   font-family: Arial, sans-serif;
 }
 
-.card-scanner h2 {
-  color: #2c3e50;
-  font-size: 2rem;
+h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.instructions {
+  font-size: 16px;
   margin-bottom: 20px;
 }
 
 .file-input-wrapper {
-  position: relative;
   display: inline-block;
-  margin-bottom: 20px;
-}
-
-.file-input-wrapper button {
-  background-color: #3498db;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-.file-input-wrapper button:hover {
-  background-color: #2980b9;
+  position: relative;
+  margin: 20px 0;
 }
 
 .file-input-wrapper input[type="file"] {
   position: absolute;
   left: 0;
   top: 0;
-  opacity: 0;
+  opacity: 0; /* Hide the default file input */
   width: 100%;
   height: 100%;
   cursor: pointer;
 }
 
-button {
-  background-color: #e67e22;
+.file-input-wrapper button {
+  background-color: #007bff;
   color: white;
-  padding: 10px 20px;
   border: none;
+  padding: 10px 20px;
+  font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 1rem;
-  margin-top: 10px;
-  transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #d35400;
+.file-input-wrapper button:hover {
+  background-color: #0056b3;
 }
 
-select {
-  margin: 10px 0;
-  padding: 5px;
-  font-size: 1rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+.preview-section {
+  margin-top: 20px;
+  text-align: center;
+  overflow: auto; /* Ensure this section is scrollable if needed */
+}
+
+.preview-section img {
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  max-height: 400px; /* Restrict image height */
+  max-width: 100%;
+  display: block;
+  margin: 10px auto;
 }
 
 .webcam-container {
-  margin: 20px 0;
   width: 100%;
-  max-width: 500px;
-  height: 300px;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  overflow: hidden;
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
 }
 
-img {
+.webcam-section {
   margin-top: 20px;
-  max-width: 100%;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.ebay-search {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.ebay-search button {
+  margin-top: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.ebay-search button:hover {
+  background-color: #218838;
+}
+
+.ebay-search ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.ebay-search ul li {
+  margin: 5px 0;
 }

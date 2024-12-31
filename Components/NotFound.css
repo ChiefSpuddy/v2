@@ -3,7 +3,6 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow: hidden; /* Prevent scrolling on the entire page */
   }
   
   .not-found-container {
@@ -17,7 +16,6 @@ html, body {
     color: #333; /* Dark text color */
     padding: 20px; /* Add some padding */
     box-sizing: border-box; /* Include padding in height calculation */
-    overflow: hidden; /* Ensure no scrolling inside the container */
   }
   
   .not-found-container h1 {
