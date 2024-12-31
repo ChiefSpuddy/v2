@@ -6,9 +6,10 @@ import NotFoundImage from './assets/jiggly-cry.gif'; // Adjusted path
 const NotFound = () => {
   return (
     <div className="not-found-container">
+              <img src={NotFoundImage} alt="404 Not Found" className="pikachu-baloon" />
       <h1>404 - Page Not Found</h1>
       <p>Oops! The page you're looking for doesn't exist.</p>
-      <img src={NotFoundImage} alt="404 Not Found" className="pikachu-baloon" />
+
       <Link to="/" className="home-button">
         Go back to Home
       </Link>

@@ -5,14 +5,18 @@ import './CardScanner.css';
 function CardScanner() {
   const [image, setImage] = useState(null);
   const [showWebcam, setShowWebcam] = useState(false);
-  const webcamRef = useRef(null);
   const [deviceId, setDeviceId] = useState('');
   const [devices, setDevices] = useState([]);
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [cardName, setCardName] = useState(''); // Card name for eBay search
+  const webcamRef = useRef(null);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(URL.createObjectURL(file));
+      setCardName('Pikachu'); // Placeholder: Replace with actual OCR or user input
     }
   };
 
@@ -20,6 +24,7 @@ function CardScanner() {
     if (webcamRef.current) {
       const capturedImage = webcamRef.current.getScreenshot();
       setImage(capturedImage);
+      setCardName('Charizard'); // Placeholder: Replace with actual OCR or user input
       setShowWebcam(false); // Close webcam after capturing
     }
   };
@@ -35,6 +40,28 @@ function CardScanner() {
 
     if (!devices.length) {
       navigator.mediaDevices.enumerateDevices().then(handleDevices);
+    }
+  };
+
+  const fetchEbayData = async () => {
+    if (!cardName) {
+      alert('Please provide a card name to search eBay.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://svcs.sandbox.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByKeywords&SECURITY-APPNAME=${process.env.REACT_APP_EBAY_APP_ID}&RESPONSE-DATA-FORMAT=JSON&keywords=${encodeURIComponent(
+          cardName
+        )}`
+      );
+      const data = await response.json();
+      setResults(data.findItemsByKeywordsResponse[0].searchResult[0].item || []);
+    } catch (error) {
+      console.error('Error fetching data from eBay:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -102,6 +129,24 @@ function CardScanner() {
           />
         </div>
       )}
+
+      {/* eBay Search */}
+      <div className="ebay-search">
+        <h3>eBay Search</h3>
+        <p>Searching for: <strong>{cardName || 'No card selected'}</strong></p>
+        <button onClick={fetchEbayData} disabled={!cardName || loading}>
+          {loading ? 'Searching...' : 'Search eBay'}
+        </button>
+        <ul>
+          {results.map((item, index) => (
+            <li key={index}>
+              <a href={item.viewItemURL[0]} target="_blank" rel="noopener noreferrer">
+                {item.title[0]} - ${item.sellingStatus[0].currentPrice[0].__value__}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
