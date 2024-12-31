@@ -5,7 +5,7 @@ import './CardScanner.css';
 
 function CardScanner() {
   const [image, setImage] = useState(null);
-  const [ocrResults, setOcrResults] = useState({ text: '', cardName: '', cardNumber: '' });
+  const [extractedText, setExtractedText] = useState('');
   const [ocrLoading, setOcrLoading] = useState(false);
   const [showWebcam, setShowWebcam] = useState(false);
   const webcamRef = useRef(null);
@@ -15,7 +15,12 @@ function CardScanner() {
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setImage(imageUrl);
-      await processImageForOCR(imageUrl);
+      setOcrLoading(true);
+
+      const fullText = await extractTextFromImage(imageUrl);
+      setExtractedText(fullText);
+
+      setOcrLoading(false);
     }
   };
 
@@ -23,20 +28,11 @@ function CardScanner() {
     if (webcamRef.current) {
       const capturedImage = webcamRef.current.getScreenshot();
       setImage(capturedImage);
-      await processImageForOCR(capturedImage);
-      setShowWebcam(false);
-    }
-  };
+      setOcrLoading(true);
 
-  const processImageForOCR = async (imageUrl) => {
-    setOcrLoading(true);
-    try {
-      const results = await extractTextFromImage(imageUrl);
-      setOcrResults(results);
-    } catch (error) {
-      console.error('OCR Processing Failed:', error);
-      setOcrResults({ text: 'Error processing image', cardName: 'Unknown', cardNumber: 'Unknown' });
-    } finally {
+      const fullText = await extractTextFromImage(capturedImage);
+      setExtractedText(fullText);
+
       setOcrLoading(false);
     }
   };
@@ -48,7 +44,9 @@ function CardScanner() {
   return (
     <div className="card-scanner">
       <h2>Card Scanner</h2>
-      <p>Upload an image or scan a card to extract text.</p>
+      <p className="instructions">
+        Upload or scan a card to extract all visible text.
+      </p>
 
       <div className="file-input-wrapper">
         <button>Select File</button>
@@ -56,9 +54,7 @@ function CardScanner() {
       </div>
 
       <div>
-        <button onClick={toggleWebcam}>
-          {showWebcam ? 'Close Webcam' : 'Use Webcam'}
-        </button>
+        <button onClick={toggleWebcam}>{showWebcam ? 'Close Webcam' : 'Use Webcam'}</button>
       </div>
 
       {showWebcam && (
@@ -73,28 +69,18 @@ function CardScanner() {
         </div>
       )}
 
-      {ocrLoading && <p>Processing image...</p>}
+      {ocrLoading && <p>Processing image, please wait...</p>}
 
       {image && (
         <div className="preview-section">
           <h3>Preview</h3>
-          <img src={image} alt="Uploaded or Captured Card" style={{ maxWidth: '300px' }} />
+          <img src={image} alt="Uploaded or Captured Card" />
         </div>
       )}
 
-      <div className="ocr-results">
+      <div className="text-output">
         <h3>Extracted Text</h3>
-        <textarea
-          value={ocrResults.text}
-          readOnly
-          style={{ width: '100%', height: '200px', marginTop: '10px' }}
-        />
-        <p>
-          Card Name: <strong>{ocrResults.cardName}</strong>
-        </p>
-        <p>
-          Card Number: <strong>{ocrResults.cardNumber}</strong>
-        </p>
+        {extractedText ? <pre>{extractedText}</pre> : <p>No text extracted yet.</p>}
       </div>
     </div>
   );
