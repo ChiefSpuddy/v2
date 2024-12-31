@@ -1,30 +1,99 @@
 from flask import Flask, request, jsonify
 import easyocr
-import requests
+from PIL import Image, ImageEnhance
+import cv2
+import numpy as np
+import os
+import io
 
+# Initialize Flask app and OCR Reader
 app = Flask(__name__)
-reader = easyocr.Reader(['en'])
+reader = easyocr.Reader(['en'])  # Adjust language if needed
 
-EBAY_API_KEY = 'Your-API-Key'  # Replace with your eBay API key
+# Path to card set symbols
+card_set_folder = "src/set_icons/"  # Path to your set icons folder
+
+def load_card_set_icons():
+    """Load card set icons into a dictionary."""
+    card_sets = {}
+    for filename in os.listdir(card_set_folder):
+        if filename.endswith(".png") or filename.endswith(".jpg"):
+            path = os.path.join(card_set_folder, filename)
+            icon_name = os.path.splitext(filename)[0]  # Use filename (without extension) as the set name
+            card_sets[icon_name] = cv2.imread(path, cv2.IMREAD_GRAYSCALE)  # Load in grayscale
+    return card_sets
+
+# Load card set symbols at the start
+card_sets = load_card_set_icons()
+
+def compare_symbols(extracted_symbol, card_sets):
+    """Compare extracted symbol to known card set icons."""
+    best_match = None
+    best_score = 0
+
+    # Resize extracted symbol to match template sizes
+    extracted_symbol_resized = cv2.resize(extracted_symbol, (50, 50))
+
+    for name, template in card_sets.items():
+        template_resized = cv2.resize(template, (50, 50))
+        # Compare using Template Matching
+        score = cv2.matchTemplate(extracted_symbol_resized, template_resized, cv2.TM_CCOEFF_NORMED)
+        _, max_val, _, _ = cv2.minMaxLoc(score)
+
+        if max_val > best_score:
+            best_score = max_val
+            best_match = name
+
+    return best_match if best_score > 0.8 else None  # Adjust threshold as needed
 
 @app.route('/ocr', methods=['POST'])
 def ocr():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-    file = request.files['file']
-    results = reader.readtext(file)
-    return jsonify({"text": [res[1] for res in results]})
+    try:
+        print("OCR endpoint hit!")  # Debugging log
 
-@app.route('/search', methods=['POST'])
-def ebay_search():
-    data = request.json
-    search_term = data.get('query', '')
-    response = requests.get(
-        'https://api.ebay.com/buy/browse/v1/item_summary/search',
-        headers={'Authorization': f'Bearer {EBAY_API_KEY}'},
-        params={'q': search_term, 'limit': 5}
-    )
-    return jsonify(response.json())
+        # Check if the request contains a file
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file part in the request'}), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No file uploaded'}), 400
+
+        if not file.mimetype.startswith('image/'):
+            return jsonify({'error': 'Invalid file type'}), 400
+
+        # Read the file content as bytes and load as an image
+        file_bytes = file.read()
+        img = Image.open(io.BytesIO(file_bytes))
+        img = img.convert('RGB')  # Ensure it's in RGB format for cropping
+
+        # Crop the region for the set symbol (adjust coordinates based on card layout)
+        width, height = img.size
+        symbol_region = img.crop((width * 0.85, height * 0.85, width, height))  # Adjust as needed
+        symbol_np = np.array(symbol_region)
+        symbol_gray = cv2.cvtColor(symbol_np, cv2.COLOR_RGB2GRAY)
+
+        # Compare the extracted symbol with known card set icons
+        matched_set = compare_symbols(symbol_gray, card_sets)
+
+        # Process results for name (optional)
+        results = reader.readtext(io.BytesIO(file_bytes))
+        name = None
+        for item in results:
+            cleaned_text = item[1].strip()
+            if cleaned_text:  # Assuming any valid text is the name
+                name = cleaned_text
+                break
+
+        response = {
+            "name": name,
+            "card_set": matched_set
+        }
+        return jsonify(response)
+
+    except Exception as e:
+        print(f"Error during OCR: {e}")
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
