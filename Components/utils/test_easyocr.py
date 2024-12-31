@@ -1,19 +1,17 @@
-import easyocr
+from Components.features.ocr_and_ebay import ocr_and_search
 
-def run_easyocr():
-    # Initialize the EasyOCR reader
-    reader = easyocr.Reader(['en'])
+def run_test():
+    image_path = "Components/assets/pikachu.jpg"
+    app_id = "YOUR_EBAY_APP_ID"  # Replace with your actual eBay App ID
+    results = ocr_and_search(image_path, app_id)
 
-    # Specify the image path
-    image_path = r"C:\Users\Sam\Documents\pikachu.jpg"
+    print("OCR Results:")
+    for result in results["ocr_results"]:
+        print(f"{result['text']} (Confidence: {result['confidence']:.2f})")
 
-
-    # Process the image and extract text
-    result = reader.readtext(image_path)
-
-    # Print the results
-    for detection in result:
-        print(f"Detected text: {detection[1]} (Confidence: {detection[2]})")
+    print("\neBay Results:")
+    for item in results["ebay_results"]:
+        print(f"{item['title']} - ${item['price']}")
 
 if __name__ == "__main__":
-    run_easyocr()
+    run_test()
