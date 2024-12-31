@@ -22,21 +22,7 @@ function CardScanner() {
 
       // Start OCR
       setOcrLoading(true);
-      Tesseract.recognize(imageUrl, 'eng', {
-        logger: (info) => console.log(info),
-        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ',
-      })
-        .then(({ data: { text } }) => {
-          console.log('Extracted Text:', text);
-          setCardName(text.split('\n')[0]); // Extract the first line of text
-        })
-        .catch((error) => {
-          console.error('OCR Error:', error);
-          setCardName('Unable to read card');
-        })
-        .finally(() => {
-          setOcrLoading(false);
-        });
+      processImageForOCR(imageUrl);
     }
   };
 
@@ -47,24 +33,27 @@ function CardScanner() {
 
       // Start OCR
       setOcrLoading(true);
-      Tesseract.recognize(capturedImage, 'eng', {
-        logger: (info) => console.log(info),
-        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ',
-      })
-        .then(({ data: { text } }) => {
-          console.log('Extracted Text:', text);
-          setCardName(text.split('\n')[0]); // Extract the first line of text
-        })
-        .catch((error) => {
-          console.error('OCR Error:', error);
-          setCardName('Unable to read card');
-        })
-        .finally(() => {
-          setOcrLoading(false);
-        });
-
+      processImageForOCR(capturedImage);
       setShowWebcam(false);
     }
+  };
+
+  const processImageForOCR = (imageUrl) => {
+    Tesseract.recognize(imageUrl, 'eng', {
+      logger: (info) => console.log(info),
+      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ',
+    })
+      .then(({ data: { text } }) => {
+        console.log('Extracted Text:', text);
+        setCardName(text.split('\n')[0]); // Use the first line
+      })
+      .catch((error) => {
+        console.error('OCR Error:', error);
+        setCardName('Unable to read card');
+      })
+      .finally(() => {
+        setOcrLoading(false);
+      });
   };
 
   const handleDevices = (mediaDevices) => {
@@ -165,6 +154,7 @@ function CardScanner() {
         </div>
       )}
 
+      {/* Display Image */}
       {image && (
         <div className="preview-section">
           <h3>Preview</h3>

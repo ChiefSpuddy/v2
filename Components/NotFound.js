@@ -1,14 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './NotFound.css';
 
 const NotFound = () => {
-  useEffect(() => {
-    document.body.classList.add('no-scroll');
-    return () => {
-      document.body.classList.remove('no-scroll');
-    };
-  }, []);
-
   return (
     <div className="not-found-container">
       <h1>404 - Page Not Found</h1>
