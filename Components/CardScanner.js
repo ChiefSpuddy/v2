@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import Webcam from 'react-webcam';
+import Tesseract from 'tesseract.js';
 import './CardScanner.css';
 
 function CardScanner() {
@@ -9,14 +10,33 @@ function CardScanner() {
   const [devices, setDevices] = useState([]);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [cardName, setCardName] = useState(''); // Card name for eBay search
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [cardName, setCardName] = useState('');
   const webcamRef = useRef(null);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file));
-      setCardName('Psyduck'); // Set a placeholder card name for testing
+      const imageUrl = URL.createObjectURL(file);
+      setImage(imageUrl);
+
+      // Start OCR
+      setOcrLoading(true);
+      Tesseract.recognize(imageUrl, 'eng', {
+        logger: (info) => console.log(info),
+        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ',
+      })
+        .then(({ data: { text } }) => {
+          console.log('Extracted Text:', text);
+          setCardName(text.split('\n')[0]); // Extract the first line of text
+        })
+        .catch((error) => {
+          console.error('OCR Error:', error);
+          setCardName('Unable to read card');
+        })
+        .finally(() => {
+          setOcrLoading(false);
+        });
     }
   };
 
@@ -24,8 +44,26 @@ function CardScanner() {
     if (webcamRef.current) {
       const capturedImage = webcamRef.current.getScreenshot();
       setImage(capturedImage);
-      setCardName('Charizard'); // Set a placeholder card name for testing
-      setShowWebcam(false); // Close webcam after capturing
+
+      // Start OCR
+      setOcrLoading(true);
+      Tesseract.recognize(capturedImage, 'eng', {
+        logger: (info) => console.log(info),
+        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ',
+      })
+        .then(({ data: { text } }) => {
+          console.log('Extracted Text:', text);
+          setCardName(text.split('\n')[0]); // Extract the first line of text
+        })
+        .catch((error) => {
+          console.error('OCR Error:', error);
+          setCardName('Unable to read card');
+        })
+        .finally(() => {
+          setOcrLoading(false);
+        });
+
+      setShowWebcam(false);
     }
   };
 
@@ -56,10 +94,19 @@ function CardScanner() {
           cardName
         )}`
       );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
-      setResults(data.findItemsByKeywordsResponse[0].searchResult[0].item || []);
+      console.log('eBay API Response:', data);
+
+      const items = data.findItemsByKeywordsResponse[0].searchResult[0].item || [];
+      setResults(items);
     } catch (error) {
       console.error('Error fetching data from eBay:', error);
+      alert('Failed to fetch data from eBay. Check console for details.');
     } finally {
       setLoading(false);
     }
@@ -90,9 +137,10 @@ function CardScanner() {
         </button>
       </div>
 
+      {ocrLoading && <p>Processing image, please wait...</p>}
+
       {showWebcam && (
         <div className="webcam-section">
-          {/* Camera Selector */}
           <select onChange={(e) => setDeviceId(e.target.value)} value={deviceId}>
             {devices.map((device, index) => (
               <option key={index} value={device.deviceId}>
@@ -101,7 +149,6 @@ function CardScanner() {
             ))}
           </select>
 
-          {/* Webcam View */}
           <div className="webcam-container">
             <Webcam
               ref={webcamRef}
@@ -118,7 +165,6 @@ function CardScanner() {
         </div>
       )}
 
-      {/* Display Image */}
       {image && (
         <div className="preview-section">
           <h3>Preview</h3>
@@ -134,9 +180,11 @@ function CardScanner() {
       <div className="ebay-search">
         <h3>eBay Search</h3>
         <p>Searching for: <strong>{cardName || 'No card selected'}</strong></p>
-        <button onClick={fetchEbayData} disabled={loading}>
+        <button onClick={fetchEbayData} disabled={loading || ocrLoading}>
           {loading ? 'Searching...' : 'Search eBay'}
         </button>
+        {loading && <p>Loading results...</p>}
+        {!loading && results.length === 0 && cardName && <p>No results found for "{cardName}".</p>}
         <ul>
           {results.map((item, index) => (
             <li key={index}>
