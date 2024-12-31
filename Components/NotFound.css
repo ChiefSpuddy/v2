@@ -1,0 +1,54 @@
+/* Ensure the entire page fits within the viewport */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden; /* Prevent scrolling on the entire page */
+  }
+  
+  .not-found-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    text-align: center;
+    background-color: #f8f9fa; /* Light background */
+    color: #333; /* Dark text color */
+    padding: 20px; /* Add some padding */
+    box-sizing: border-box; /* Include padding in height calculation */
+    overflow: hidden; /* Ensure no scrolling inside the container */
+  }
+  
+  .not-found-container h1 {
+    font-size: 3rem;
+    margin: 0;
+    text-align: center;
+    word-break: break-word; /* Prevent long words from breaking layout */
+  }
+  
+  .not-found-container p {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    max-width: 90%; /* Limit paragraph width for readability */
+    line-height: 1.5;
+    text-align: center;
+  }
+  
+  .home-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #f39c12; /* Bright orange background */
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    text-decoration: none; /* Remove underline */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease;
+  }
+  
+  .home-button:hover {
+    background-color: #d35400; /* Darker orange on hover */
+  }
+  

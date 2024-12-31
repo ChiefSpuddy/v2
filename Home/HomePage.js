@@ -7,7 +7,7 @@ function HomePage() {
     <div className="home">
       <h1>Welcome to the Pokémon Card Scanner</h1>
       <p>Scan your Pokémon cards to get details and prices!</p>
-      <Link to="/card-scanner">
+      <Link to="/scanner">
         <button>Go to Card Scanner</button>
       </Link>
     </div>

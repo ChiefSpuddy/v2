@@ -1,0 +1,19 @@
+import React from 'react';
+import { Link } from 'react-router-dom'; // Import Link for navigation
+import './NotFound.css';
+import NotFoundImage from './assets/pikachu-baloon.gif'; // Adjusted path
+
+const NotFound = () => {
+  return (
+    <div className="not-found-container">
+      <h1>404 - Page Not Found</h1>
+      <p>Oops! The page you're looking for doesn't exist.</p>
+      <img src={NotFoundImage} alt="404 Not Found" className="pikachu-baloon" />
+      <Link to="/" className="home-button">
+        Go back to Home
+      </Link>
+    </div>
+  );
+};
+
+export default NotFound;
