@@ -33,12 +33,17 @@ function CardScanner() {
 
   const processImageForOCR = async (imageUrl) => {
     setOcrLoading(true);
-    const preprocessedImage = await preprocessImage(imageUrl);
-    const { cardName, cardNumber } = await extractCardDetails(preprocessedImage);
-
-    setCardName(cardName);
-    setCardNumber(cardNumber);
-    setOcrLoading(false);
+    try {
+      const { name, number } = await extractCardDetails(imageUrl);
+      setCardName(name);
+      setCardNumber(number);
+    } catch (error) {
+      console.error('OCR Processing Error:', error);
+      setCardName('Error Processing Card');
+      setCardNumber('N/A');
+    } finally {
+      setOcrLoading(false);
+    }
   };
 
   const fetchEbayData = () => {
