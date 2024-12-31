@@ -2,7 +2,7 @@ from Components.features.ocr_and_ebay import ocr_and_search
 
 def run_test():
     image_path = "Components/assets/pikachu.jpg"
-    app_id = "YOUR_EBAY_APP_ID"  # Replace with your actual eBay App ID
+    app_id = "SamMay-CardScan-SBX-9faa35af2-f7a6d731"  # Replace with your actual eBay App ID
     results = ocr_and_search(image_path, app_id)
 
     print("OCR Results:")
