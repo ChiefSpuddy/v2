@@ -1,0 +1,15 @@
+# Ignore virtual environment
+backend/venv/
+
+# Ignore Python bytecode files
+*.pyc
+__pycache__/
+
+# Ignore node_modules if you're using npm
+node_modules/
+
+# Ignore IDE files (e.g., VS Code)
+.vscode/
+
+# Ignore log files
+*.log
