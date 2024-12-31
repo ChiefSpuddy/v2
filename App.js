@@ -1,18 +1,17 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import CardScanner from './Components/CardScanner';
-import HomePage from './Home/HomePage';
-import './App.css';
+import NavBar from './Components/NavBar'; // Assuming this path matches your structure
+import HomePage from './Pages/HomePage';
+import CardScanner from './Pages/CardScanner'; // Create this if it doesn’t already exist
 
 function App() {
   return (
     <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/card-scanner" element={<CardScanner />} />
-        </Routes>
-      </div>
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/scanner" element={<CardScanner />} />
+      </Routes>
     </Router>
   );
 }
