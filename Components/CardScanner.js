@@ -16,7 +16,7 @@ function CardScanner() {
     const file = e.target.files[0];
     if (file) {
       setImage(URL.createObjectURL(file));
-      setCardName('Pikachu'); // Placeholder: Replace with actual OCR or user input
+      setCardName('Psyduck'); // Set a placeholder card name for testing
     }
   };
 
@@ -24,7 +24,7 @@ function CardScanner() {
     if (webcamRef.current) {
       const capturedImage = webcamRef.current.getScreenshot();
       setImage(capturedImage);
-      setCardName('Charizard'); // Placeholder: Replace with actual OCR or user input
+      setCardName('Charizard'); // Set a placeholder card name for testing
       setShowWebcam(false); // Close webcam after capturing
     }
   };
@@ -134,7 +134,7 @@ function CardScanner() {
       <div className="ebay-search">
         <h3>eBay Search</h3>
         <p>Searching for: <strong>{cardName || 'No card selected'}</strong></p>
-        <button onClick={fetchEbayData} disabled={!cardName || loading}>
+        <button onClick={fetchEbayData} disabled={loading}>
           {loading ? 'Searching...' : 'Search eBay'}
         </button>
         <ul>
