@@ -1,18 +1,19 @@
-import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import React, { useEffect } from 'react';
 import './NotFound.css';
-import NotFoundImage from './assets/jiggly-cry.gif'; // Adjusted path
 
 const NotFound = () => {
+  useEffect(() => {
+    document.body.classList.add('no-scroll');
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, []);
+
   return (
     <div className="not-found-container">
-              <img src={NotFoundImage} alt="404 Not Found" className="pikachu-baloon" />
       <h1>404 - Page Not Found</h1>
       <p>Oops! The page you're looking for doesn't exist.</p>
-
-      <Link to="/" className="home-button">
-        Go back to Home
-      </Link>
+      <button onClick={() => (window.location.href = '/')}>Go Back to Home</button>
     </div>
   );
 };
