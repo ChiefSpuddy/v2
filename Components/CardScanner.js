@@ -44,30 +44,21 @@ function CardScanner() {
 
       {/* File Upload */}
       <div className="file-input-wrapper">
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
         <button>Select File</button>
+        <input type="file" accept="image/*" onChange={handleImageUpload} />
       </div>
 
       {/* Webcam Option */}
       <div>
-        <button className="webcam-toggle-button" onClick={toggleWebcam}>
+        <button onClick={toggleWebcam}>
           {showWebcam ? 'Close Webcam' : 'Use Webcam'}
         </button>
       </div>
 
       {showWebcam && (
-        <div style={{ textAlign: 'center', marginTop: '10px' }}>
+        <div>
           {/* Camera Selector */}
-          <select
-            onChange={(e) => setDeviceId(e.target.value)}
-            value={deviceId}
-            style={{
-              marginBottom: '10px',
-              padding: '5px',
-              borderRadius: '5px',
-              border: '1px solid #ccc',
-            }}
-          >
+          <select onChange={(e) => setDeviceId(e.target.value)} value={deviceId}>
             {devices.map((device, index) => (
               <option key={index} value={device.deviceId}>
                 {device.label || `Camera ${index + 1}`}
@@ -76,19 +67,7 @@ function CardScanner() {
           </select>
 
           {/* Webcam View */}
-          <div
-            className="webcam-container"
-            style={{
-              display: 'inline-block',
-              width: '400px',
-              maxWidth: '100%',
-              marginTop: '10px',
-              borderRadius: '10px',
-              overflow: 'hidden',
-              border: '1px solid #ccc',
-              aspectRatio: '16 / 9',
-            }}
-          >
+          <div className="webcam-container">
             <Webcam
               ref={webcamRef}
               audio={false}
@@ -100,12 +79,7 @@ function CardScanner() {
             />
           </div>
 
-          {/* Capture Button */}
-          <div style={{ marginTop: '10px' }}>
-            <button className="capture-button" onClick={captureImage}>
-              Capture
-            </button>
-          </div>
+          <button onClick={captureImage}>Capture</button>
         </div>
       )}
 

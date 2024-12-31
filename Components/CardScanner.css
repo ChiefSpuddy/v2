@@ -1,10 +1,8 @@
-/* General Card Scanner Styles */
 .card-scanner {
     text-align: center;
     margin-top: 20px;
   }
   
-  /* General Button Styles */
   .card-scanner button {
     padding: 10px 20px;
     background-color: #2a75bb; /* Pokémon blue */
@@ -20,13 +18,13 @@
     background-color: #0056a3;
   }
   
-  /* File Input Button Wrapper */
-  .card-scanner .file-input-wrapper {
+  /* Custom file input styling */
+  .file-input-wrapper {
     position: relative;
     display: inline-block;
   }
   
-  .card-scanner .file-input-wrapper input[type="file"] {
+  .file-input-wrapper input[type="file"] {
     position: absolute;
     left: 0;
     top: 0;
@@ -36,7 +34,7 @@
     cursor: pointer;
   }
   
-  .card-scanner .file-input-wrapper button {
+  .file-input-wrapper button {
     padding: 10px 20px;
     background-color: #2a75bb;
     color: #fff;
@@ -45,42 +43,28 @@
     cursor: pointer;
   }
   
-  .card-scanner .file-input-wrapper button:hover {
+  .file-input-wrapper button:hover {
     background-color: #0056a3;
   }
   
-  /* Webcam Container Styling */
+  .card-scanner img {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-width: 300px;
+    margin-top: 10px;
+  }
+  
+  /* Webcam Styling */
   .card-scanner .webcam-container {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 20px auto;
     width: 400px;
     max-width: 100%;
-    margin: 10px auto;
     border-radius: 10px;
     overflow: hidden;
     border: 1px solid #ccc;
     aspect-ratio: 16 / 9;
-  }
-  
-  /* Camera Selector (Dropdown) */
-  .card-scanner select {
-    margin-top: 10px;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    margin-bottom: 10px;
-  }
-  
-  /* Image Preview Styling */
-  .card-scanner img {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    max-width: 300px; /* Limit the image width */
-    margin-top: 10px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
   }
   
