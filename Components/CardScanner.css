@@ -15,22 +15,6 @@
   margin-bottom: 20px;
 }
 
-.instructions {
-  font-size: 1.2rem;
-  color: #34495e;
-  margin-bottom: 15px;
-}
-
-.instructions-list {
-  text-align: left;
-  margin: 0 auto 20px auto;
-  max-width: 600px;
-  padding: 0;
-  list-style: disc;
-  color: #34495e;
-  font-size: 1rem;
-}
-
 .file-input-wrapper {
   position: relative;
   display: inline-block;
@@ -62,26 +46,6 @@
   cursor: pointer;
 }
 
-.webcam-section {
-  margin-top: 20px;
-}
-
-.webcam-container {
-  margin: 20px auto;
-  width: 500px;
-  height: 300px;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.preview-section img {
-  margin-top: 20px;
-  max-width: 100%;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 button {
   background-color: #e67e22;
   color: white;
@@ -96,4 +60,29 @@ button {
 
 button:hover {
   background-color: #d35400;
+}
+
+select {
+  margin: 10px 0;
+  padding: 5px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.webcam-container {
+  margin: 20px 0;
+  width: 100%;
+  max-width: 500px;
+  height: 300px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+img {
+  margin-top: 20px;
+  max-width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
